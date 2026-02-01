@@ -1,5 +1,5 @@
 {
-  "name": "GlycoSnap - Pre-Diabetes Food Assistant",
+  "name": "Nara AR Glasses - Pre-Diabetes Food Assistant",
   "description": "Snap a photo of your food or nutrition labels to instantly see carb/sugar breakdowns and get healthier, pre-diabetic friendly alternatives.",
   "requestFramePermissions": [
     "camera"
