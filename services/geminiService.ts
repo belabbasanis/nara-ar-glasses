@@ -1,7 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { MetabolicData, ImpactLevel } from "../types";
 
-// Initialize the Google GenAI client using the required environment variable
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const USDA_API_KEY = 'kFIhQB4ocoktiQJdg3A9RuN9og8VGeVrUUZAqfh7';
 
@@ -76,8 +75,33 @@ export const analyzeFoodImage = async (base64Image: string, metabolicContext: Me
     delta_glucose_max: aiResult.delta_glucose_max,
     carbs_grams: usdaData?.totalCarbs ?? aiResult.est_carbs,
     sugars_grams: usdaData?.sugars ?? aiResult.est_sugars,
-    // Corrected: usdaData uses 'fiber' property, while aiResult uses 'est_fiber'
     fiber_grams: usdaData?.fiber ?? aiResult.est_fiber,
     food_name: aiResult.food_name
   };
+};
+
+export const chatWithAssistant = async (query: string, metabolic: MetabolicData): Promise<string> => {
+  const model = 'gemini-3-flash-preview';
+  const context = metabolic.scan.state === 'COMPLETE' 
+    ? `User just scanned: ${metabolic.scan.food_name}. Impact: ${metabolic.scan.impact_level}. Carbs: ${metabolic.scan.carbs_grams}g.`
+    : "No food scanned yet.";
+
+  const prompt = `ACT AS GLYCO_ADVISOR v1.0. 
+  CONTEXT: ${context}
+  USER_QUERY: ${query}
+  
+  RULES:
+  1. Be tactical and brief.
+  2. Max 60 characters.
+  3. Focus on pre-diabetic safety.
+  4. Persona: AR HUD Voice Assistant.
+  
+  RESPONSE STYLE: "ADVICE: [YOUR_TEXT]"`;
+
+  const response = await ai.models.generateContent({
+    model,
+    contents: prompt
+  });
+
+  return response.text?.trim() || "ADVICE: NO_SIGNAL";
 };

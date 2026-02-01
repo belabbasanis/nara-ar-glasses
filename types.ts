@@ -4,18 +4,23 @@ export type SystemState = 'OK' | 'NO_SIGNAL' | 'WARMUP' | 'ERROR';
 export type ScanState = 'IDLE' | 'SCANNING' | 'COMPLETE';
 export type ImpactLevel = 'LOW' | 'MED' | 'HIGH';
 
-// Define HealthStatus enum used by NutritionCard component
 export enum HealthStatus {
   SAFE = 'SAFE',
   MODERATE = 'MODERATE',
   CAUTION = 'CAUTION'
 }
 
-// Define Alternative interface used by AlternativeList component
 export interface Alternative {
   name: string;
   reason: string;
   carbsSaved: string;
+}
+
+export interface AssistantState {
+  is_active: boolean;
+  last_query?: string;
+  response?: string;
+  is_thinking: boolean;
 }
 
 export interface MetabolicData {
@@ -40,11 +45,11 @@ export interface MetabolicData {
     carbs_grams: number;
     sugars_grams: number;
     fiber_grams: number;
-    food_name?: string; // Optional context
+    food_name?: string;
   };
+  assistant: AssistantState;
 }
 
-// Deprecated NutritionData in favor of the new MetabolicData.scan contract
 export interface NutritionData {
   foodName: string;
   totalCarbs: number;
